@@ -1,0 +1,32 @@
+syntax = "proto3";
+package monitor.proto;
+
+// 物理内存
+message MemInfo {
+    float total = 1;            // 物理内存总量
+    float free = 2;             // 未使用的空闲内存
+    float avail= 3;             // 可用内存
+    float buffers = 4;          // 块设备 缓存   文件系统元数据
+    float cached = 5;           // 文件内容缓存   读取过的文件内容，直接放在内存里，下次读取极快
+    float swap_cached = 6;      // 交换分区缓存   已经被交换到硬盘，但还在内存里有副本，避免频繁换入换出
+    
+    // 活跃度区分
+    float active = 7;           // 活跃度
+    float inactive = 8;         // 非活跃度
+    float active_anon = 9;      // 活跃的匿名内存
+    float inactive_anon = 10;   // 非活跃的 匿名内存
+    float active_file = 11;     // 活跃的 文件缓存
+    float inactive_file = 12;   // 非活跃的 文件缓存
+
+    // 内核和进程内部细节
+    float dirty = 13;           // 脏页 已经被修改但还没来得及写入硬盘的内存
+    float writeback = 14;       // 正在被写回硬盘的内存大小
+    float anon_pages = 15;      // 匿名内存页的总大小
+    float mapped = 16;          // 设备映射及共享内存的大小（mmap 调用占用的内存）
+   
+    // 内核 Slab内存
+    float kReclaimable = 17;    // Slab中的可回收内存
+    float sReclaimable = 18;    // 可回收的内核 Slab
+    float sUnreclaim = 19;      // 不可回收的内核
+    float used_percent = 31;    // 内存使用率
+  }

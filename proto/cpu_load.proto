@@ -1,0 +1,12 @@
+syntax = "proto3";
+package monitor.proto;
+
+// 对应 Linux 系统中 /proc/loadavg 文件的
+// 第 N 个数值，即 N 分钟内的系统平均负载
+// 处于运行状态或等待 CPU/I/O 的进程数量
+// 数值越低越好
+message CpuLoad {
+    float load_avg_1 = 1;
+    float load_avg_3 = 2;
+    float load_avg_15 = 3;
+  }
