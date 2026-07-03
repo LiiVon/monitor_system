@@ -60,6 +60,38 @@ monitor_system/
 └── CMakeLists.txt             # 构建配置
 ```
 
+## 运行主线
+```mermaid
+flowchart LR
+    WMain["worker/src/main.cpp"] --> WPusher["worker/src/rpc/monitor_pusher.cpp"]
+    WPusher --> WCollector["worker/src/monitor/metric_collector.cpp"]
+    WCollector --> WMon["worker/src/monitor/*.cpp"]
+
+    subgraph WImpl["worker/src/monitor/*.cpp"]
+        CpuLoad["cpu_load_monitor.cpp"]
+        CpuStat["cpu_stat_monitor.cpp"]
+        CpuSoft["cpu_softirq_monitor.cpp"]
+        Mem["mem_monitor.cpp"]
+        Net["net_monitor.cpp / net_ebpf_monitor.cpp"]
+        Disk["disk_monitor.cpp"]
+        Host["host_info_monitor.cpp"]
+    end
+
+    WCollector --> CpuLoad
+    WCollector --> CpuStat
+    WCollector --> CpuSoft
+    WCollector --> Mem
+    WCollector --> Net
+    WCollector --> Disk
+    WCollector --> Host
+
+    WCollector --> ProtoMon["proto/monitor_info.proto - MonitorInfo"]
+    ProtoMon --> MGrpc["manager/src/rpc/grpc_server.cpp - SetMonitorInfo"]
+    MGrpc --> MHost["manager/src/host_manager.cpp - OnDataReceived / WriteToMysql"]
+    MHost --> MQuery["manager/src/query_manager.cpp - 查询所依赖的数据源"]
+    MHost --> DB[("MySQL: monitor_db")]
+```
+
 ## 🔧 环境要求
 
 - **操作系统**: Linux (Ubuntu 20.04+, CentOS 8+ 推荐)
